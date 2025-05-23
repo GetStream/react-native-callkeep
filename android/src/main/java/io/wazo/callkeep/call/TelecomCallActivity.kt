@@ -31,7 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.content.getSystemService
-import com.example.platform.connectivity.telecom.model.TelecomCallRepository
+import io.wazo.callkeep.model.TelecomCallRepository
 
 
 /**

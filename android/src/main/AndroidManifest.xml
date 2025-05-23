@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.wazo.callkeep">
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- MANAGE_OWN_CALLS is needed to use Telecom platform APIs for VoIP calling -->
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
+    <!-- RECORD_AUDIO is needed in order to record the callers mic input and repeat it back to
+         the audio output to verify audio is not being suppressed from some misuse of APIs -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- BLUETOOTH_CONNECT is needed in order to expose the BT device name -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!-- required permissions in order to post call-style notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- need this permission to run any foreground service on Android 9 (API 28) and above -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
 </manifest>

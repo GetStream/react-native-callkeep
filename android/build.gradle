@@ -95,6 +95,7 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation("androidx.core:core-telecom:1.0.0-beta01")
+    implementation "androidx.core:core-telecom:1.0.0"
+    implementation "androidx.lifecycle:lifecycle-service:2.9.0"
 }
 

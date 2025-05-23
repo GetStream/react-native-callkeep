@@ -60,8 +60,7 @@ class TelecomCallRepository(private val callsManager: CallsManager) {
             val callsManager = CallsManager(context).apply {
                 // Register with the telecom interface with the supported capabilities
                 registerAppWithTelecom(
-                    capabilities = CallsManager.CAPABILITY_SUPPORTS_CALL_STREAMING and
-                            CallsManager.CAPABILITY_SUPPORTS_VIDEO_CALLING,
+                    capabilities = CallsManager.CAPABILITY_SUPPORTS_VIDEO_CALLING
                 )
             }
 

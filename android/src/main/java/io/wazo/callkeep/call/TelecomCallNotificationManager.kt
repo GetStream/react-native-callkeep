@@ -32,12 +32,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.Person
 import androidx.core.content.PermissionChecker
-import com.example.platform.connectivity.telecom.R
-import com.example.platform.connectivity.telecom.model.TelecomCall
-import com.example.platform.connectivity.telecom.model.TelecomCallAction
-import io.wazo.callkeep.R
 import io.wazo.callkeep.model.TelecomCall
 import io.wazo.callkeep.model.TelecomCallAction
+import io.wazo.callkeep.R
 
 /**
  * Handles call status changes and updates the notification accordingly. For more guidance around

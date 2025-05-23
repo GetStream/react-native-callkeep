@@ -45,7 +45,9 @@ import android.util.Log
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.facebook.react.HeadlessJsTaskService
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -56,19 +58,19 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.bridge.WritableNativeMap
-import com.facebook.react.HeadlessJsTaskService
 import com.facebook.react.modules.core.DeviceEventManagerModule.*
 import com.facebook.react.modules.permissions.PermissionsModule
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.Arrays
+import androidx.core.content.edit
+import kotlinx.coroutines.launch
 
 // @see https://github.com/kbagchiGWC/voice-quickstart-android/blob/9a2aff7fbe0d0a5ae9457b48e9ad408740dfb968/exampleConnectionService/src/main/java/com/twilio/voice/examples/connectionservice/VoiceConnectionServiceActivity.java
-class RNCallKeepModule private constructor(reactContext: ReactApplicationContext) :
+class RNCallKeepModule (reactContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactContext), LifecycleEventListener {
     private var legacyCallStateListener: LegacyCallStateListener? = null
     private var callStateListener: CallStateListener? = null
-    private var reactContext: ReactApplicationContext?
     private var isReceiverRegistered = false
     private var voiceBroadcastReceiver: VoiceBroadcastReceiver? = null
     private var delayedEvents: WritableNativeArray
@@ -79,29 +81,23 @@ class RNCallKeepModule private constructor(reactContext: ReactApplicationContext
         // This line for listening to the Activity Lifecycle Events so we can end the calls onDestroy
         reactContext.addLifecycleEventListener(this)
         Log.d(TAG, "[RNCallKeepModule] constructor")
-
-        this.reactContext = reactContext
         delayedEvents = WritableNativeArray()
     }
 
-    private val isSelfManaged: Boolean
-        get() = try {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && _settings.hasKey(
-                "selfManaged"
-            ) && _settings.getBoolean("selfManaged")
-        } catch (e: Exception) {
-            false
-        }
+    override fun initialize() {
+        super.initialize()
+        Log.d("test", "test")
+        // add here
+    }
 
-    var context: ReactApplicationContext?
-        get() = this.reactContext
-        set(reactContext) {
-            Log.d(
-                TAG,
-                "[RNCallKeepModule] updating react context"
-            )
-            this.reactContext = reactContext
-        }
+    override fun invalidate() {
+        Log.d("test", "test")
+        // add here
+        super.invalidate()
+    }
+
+    private val isSelfManaged: Boolean
+        get() = true
 
     fun reportNewIncomingCall(
         uuid: String,
@@ -136,7 +132,7 @@ class RNCallKeepModule private constructor(reactContext: ReactApplicationContext
             "[RNCallKeepModule] startObserving, event count: $count"
         )
         if (count > 0) {
-            reactContext.getJSModule<RCTDeviceEventEmitter>(RCTDeviceEventEmitter::class.java)
+            reactApplicationContext.getJSModule(RCTDeviceEventEmitter::class.java)
                 .emit("RNCallKeepDidLoadWithEvents", delayedEvents)
             delayedEvents = WritableNativeArray()
         }
@@ -1312,22 +1308,19 @@ class RNCallKeepModule private constructor(reactContext: ReactApplicationContext
         }
     }
 
-    private val appContext: Context?
-        get() = if (this.reactContext != null) reactContext.getApplicationContext() else null
 
     // Store all callkeep settings in JSON
     private fun storeSettings(options: ReadableMap): WritableMap? {
-        val context = appContext
-        if (context == null) {
+        if (reactApplicationContext == null) {
             Log.w(TAG, "[RNCallKeepModule][storeSettings] no react context found.")
             return MapUtils.readableToWritableMap(options)
         }
 
-        val sharedPref = context.getSharedPreferences("rn-callkeep", Context.MODE_PRIVATE)
+        val sharedPref = reactApplicationContext.getSharedPreferences("rn-callkeep", Context.MODE_PRIVATE)
         try {
             val jsonObject = MapUtils.convertMapToJson(options)
             val jsonString = jsonObject.toString()
-            sharedPref.edit().putString("settings", jsonString).apply()
+            sharedPref.edit() { putString("settings", jsonString) }
         } catch (e: JSONException) {
             Log.w(
                 TAG,
@@ -1541,8 +1534,8 @@ class RNCallKeepModule private constructor(reactContext: ReactApplicationContext
         var instance: RNCallKeepModule? = null
 
         private const val E_ACTIVITY_DOES_NOT_EXIST = "E_ACTIVITY_DOES_NOT_EXIST"
-        const val name: String = "RNCallKeep"
-            get() = Companion.field
+        private const val REACT_NATIVE_MODULE_NAME: String = "RNCallKeep"
+
         private var permissions = arrayOf(
             if (Build.VERSION.SDK_INT < 30) Manifest.permission.READ_PHONE_STATE else Manifest.permission.READ_PHONE_NUMBERS,
             Manifest.permission.CALL_PHONE,
@@ -1630,5 +1623,9 @@ class RNCallKeepModule private constructor(reactContext: ReactApplicationContext
             } catch (e: JSONException) {
             }
         }
+    }
+
+    override fun getName(): String {
+        return REACT_NATIVE_MODULE_NAME
     }
 }
